@@ -60,3 +60,15 @@ var mask = ee.Image(ndvi1).expression("FIRST > SECOND && FIRST > 0.6 ? 1 : 0", {
 Map.centerObject(table, 13);
 Map.addLayer(l8, l8VizParams);
 Map.addLayer(mask, maskVizParams);
+
+/** Export the mask to Google Drive
+ * `table` has multiple polygons, but `region`
+ * only accepts single polygon, so we need
+ *  to union all the polygons within `table`.
+ */
+Export.image.toDrive({
+  image: mask,
+  description: "wwmask2018huabei",
+  scale: 500,
+  region: table.union()
+});
