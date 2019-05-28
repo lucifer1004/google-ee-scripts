@@ -89,6 +89,6 @@ var validation = image.sampleRegions({
 var validation_results = validation.classify(cart);
 
 // Get a confusion matrix representing expected accuracy.
-var validationAccuracy = validation_results.errorMatrix('class', 'class');
+var validationAccuracy = validation_results.errorMatrix('class', 'classification');
 print('Validation error matrix: ', validationAccuracy);
 print('Validation overall accuracy: ', validationAccuracy.accuracy());
