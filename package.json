@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "repository": "git@github.com:lucifer1004/google-ee-scripts.git",
   "author": "Gabriel Wu <qqbbnease1004@126.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "format": "npx prettier ./**/*.js --write"
+  }
 }

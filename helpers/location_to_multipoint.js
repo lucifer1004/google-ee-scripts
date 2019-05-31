@@ -3,7 +3,7 @@
  * @param {string} points Comma separated geo-locations.
  * @return {string} Google Earth Engine script for creating multiple points.
  */
-const locationToMultiPoint = points => {
+function locationToMultiPoint(points) {
   const _points = points
     .split("\n")
     .map(
@@ -15,4 +15,4 @@ const locationToMultiPoint = points => {
     )
     .join(",");
   return `var sites = ee.Geometry.MultiPoint([${_points}])`;
-};
+}
