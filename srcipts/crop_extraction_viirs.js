@@ -8,17 +8,26 @@ function renameBand(index) {
   };
 }
 
-function getTimeSeriesImage(bands, timeSeries) {
+function getTimeSeriesImage(refBands, viBands, timeSeries) {
   var images = [];
   for (var i = 0; i < timeSeries.length; i++) {
-    var image = ee
+    var ref = ee
+      .ImageCollection("NOAA/VIIRS/001/VNP09GA")
+      .filterDate(timeSeries[i][0], timeSeries[i][1])
+      .filterBounds(region)
+      .map(clipImage)
+      .select(refBands, refBands.map(renameBand(i)))
+      .median();
+    images.push(ref);
+
+    var vi = ee
       .ImageCollection("NOAA/VIIRS/001/VNP13A1")
       .filterDate(timeSeries[i][0], timeSeries[i][1])
       .filterBounds(region)
       .map(clipImage)
-      .select(bands, bands.map(renameBand(i)))
+      .select(viBands, viBands.map(renameBand(i)))
       .median();
-    images.push(image);
+    images.push(vi);
   }
   return ee.Image.cat(images);
 }
@@ -81,21 +90,25 @@ function classifyImage(image, rfBands, classifier) {
   );
 }
 
-var bands = ["EVI", "EVI2", "NDVI"];
+var refBands = ["I1", "I2", "I3"];
+var viBands = ["NDVI"];
 var timeSeries = [
   ["2016-03-15", "2016-04-15"],
   ["2016-05-01", "2016-05-30"],
   ["2016-06-15", "2016-07-15"]
 ];
 var rfBands = [
-  "EVI_0",
-  "EVI2_0",
+  "I1_0",
+  "I2_0",
+  "I3_0",
+  "I1_1",
+  "I2_1",
+  "I3_1",
+  "I1_2",
+  "I2_2",
+  "I3_2",
   "NDVI_0",
-  "EVI_1",
-  "EVI2_1",
   "NDVI_1",
-  "EVI_2",
-  "EVI2_2",
   "NDVI_2"
 ];
 var region = ee.Geometry(
@@ -104,7 +117,7 @@ var region = ee.Geometry(
     .geometries()
     .get(32)
 );
-var image = getTimeSeriesImage(bands, timeSeries);
+var image = getTimeSeriesImage(refBands, viBands, timeSeries);
 
 var data = generateData(0.3);
 var classifier = trainRFClassifier(rfBands, data[0], data[1]);
