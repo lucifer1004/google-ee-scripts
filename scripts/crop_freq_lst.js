@@ -11,14 +11,16 @@ function calc_effective_sat(image) {
 }
 
 function calc_accumulated_sat() {
-  return ncep_st
-    .filterDate(start, end)
-    .filterBounds(region)
-    .map(calc_effective_sat)
-    .sum()
-    .select(["constant"], ["Accu"])
-    // .clip(region)
-    .updateMask(cropMask);
+  return (
+    ncep_st
+      .filterDate(start, end)
+      .filterBounds(region)
+      .map(calc_effective_sat)
+      .sum()
+      .select(["constant"], ["Accu"])
+      // .clip(region)
+      .updateMask(cropMask)
+  );
 }
 
 function calc_effective_lst(image) {
@@ -131,7 +133,7 @@ var mod44b = ee.ImageCollection("MODIS/051/MOD44B"),
   mod11a1 = ee.ImageCollection("MODIS/006/MOD11A1"),
   myd11a1 = ee.ImageCollection("MODIS/006/MYD11A1"),
   ncep_st = ee.ImageCollection("NCEP_RE/surface_temp"),
-  // region = lsib_region("CH");
+  region = lsib_region("CH");
 
 for (var i = 0; i < 19; i++) {
   var start = (2000 + i).toString();
@@ -142,21 +144,21 @@ for (var i = 0; i < 19; i++) {
     .first()
     .select("LC_Type1")
     .eq(12);
-    // .clip(region);
+  // .clip(region);
 
   var acc = calc_accumulated_sat();
   var harvCount = count_harv();
 
   Export.image.toDrive({
     image: acc,
-    description: 'ACCU_SAT_' + start,
-    scale: 1e3,
+    description: "ACCU_SAT_" + start,
+    scale: 1e3
   });
 
   Export.image.toDrive({
     image: harvCount,
-    description: 'HARV_COUNT_' + start,
-    scale: 1e3,
+    description: "HARV_COUNT_" + start,
+    scale: 1e3
   });
 }
 
