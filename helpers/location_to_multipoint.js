@@ -5,14 +5,14 @@
  */
 function locationToMultiPoint(points) {
   const _points = points
-    .split("\n")
+    .split('\n')
     .map(
       point =>
         `[${point
-          .split(",")
+          .split(',')
           .splice(0, 2)
-          .join(",")}]`
+          .join(',')}]`,
     )
-    .join(",");
+    .join(',');
   return `var sites = ee.Geometry.MultiPoint([${_points}])`;
 }

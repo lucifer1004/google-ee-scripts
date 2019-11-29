@@ -8,7 +8,7 @@ function maskL8sr(image) {
   var cloudShadowBitMask = 1 << 3;
   var cloudsBitMask = 1 << 5;
   // Get the pixel QA band.
-  var qa = image.select("pixel_qa");
+  var qa = image.select('pixel_qa');
   // Both flags should be set to zero, indicating clear conditions.
   var mask = qa
     .bitwiseAnd(cloudShadowBitMask)
@@ -17,20 +17,20 @@ function maskL8sr(image) {
   return image.updateMask(mask);
 }
 
-var table = ee.FeatureCollection("users/woshiwuzihua/huabei");
+var table = ee.FeatureCollection('users/woshiwuzihua/huabei');
 
 var ndvi = ee
-  .ImageCollection("MODIS/006/MOD13Q1")
-  .filterDate("2018-01-01", "2018-06-30")
+  .ImageCollection('MODIS/006/MOD13Q1')
+  .filterDate('2018-01-01', '2018-06-30')
   .filterBounds(table)
-  .select(["NDVI"])
+  .select(['NDVI'])
   .map(function(image) {
     return image.clip(table);
   });
 
 var l8 = ee
-  .ImageCollection("LANDSAT/LC08/C01/T1_SR")
-  .filterDate("2018-04-01", "2018-06-30")
+  .ImageCollection('LANDSAT/LC08/C01/T1_SR')
+  .filterDate('2018-04-01', '2018-06-30')
   .filterBounds(table)
   .map(maskL8sr)
   .median();
@@ -42,19 +42,19 @@ var ndvi2 = ndviList.get(11);
 
 var maskVizParams = {
   opacity: 0.5,
-  palette: ["black", "green"]
+  palette: ['black', 'green'],
 };
 
 var l8VizParams = {
-  bands: ["B4", "B3", "B2"],
+  bands: ['B4', 'B3', 'B2'],
   min: 0,
   max: 3000,
-  gamma: 1.4
+  gamma: 1.4,
 };
 
-var mask = ee.Image(ndvi1).expression("FIRST > SECOND && FIRST > 0.6 ? 1 : 0", {
-  FIRST: ee.Image(ndvi1).select("NDVI"),
-  SECOND: ee.Image(ndvi2).select("NDVI")
+var mask = ee.Image(ndvi1).expression('FIRST > SECOND && FIRST > 0.6 ? 1 : 0', {
+  FIRST: ee.Image(ndvi1).select('NDVI'),
+  SECOND: ee.Image(ndvi2).select('NDVI'),
 });
 
 Map.centerObject(table, 13);
@@ -68,7 +68,7 @@ Map.addLayer(mask, maskVizParams);
  */
 Export.image.toDrive({
   image: mask,
-  description: "wwmask2018huabei",
+  description: 'wwmask2018huabei',
   scale: 500,
-  region: table.union()
+  region: table.union(),
 });
